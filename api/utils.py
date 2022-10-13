@@ -35,7 +35,7 @@ oxidation_numbers = {
     "Cs": 1,
     "Zr": 4,
     "Cl": [-1, 1, 3, 5, 7],
-    "Co": 2,
+    "Co": [2, 3],
     "Cu": [1, 2],
     "Cn": None,
     "Cr": [2, 3, 4, 5, 6],
@@ -53,7 +53,7 @@ oxidation_numbers = {
     "Fl": 2,
     "F": -1,
     "Fr": 1,
-    "P": 5,
+    "P": [-3, 3, 5],
     "Gd": 3,
     "Ga": 3,
     "Ge": 4,
@@ -85,7 +85,7 @@ oxidation_numbers = {
     "Ne": 0,
     "Nh": 1,
     "Nb": 5,
-    "N": [-3, 5],
+    "N": [-3, 1, 2, 3, 4, 5],
     "No": 3,
     "Ni": 2,
     "Og": None,
@@ -221,7 +221,7 @@ def get_products(compounds, reactionType):
             products = metal + subindexes[0] + "O" + subindexes[1]
 
         else:
-            products = {}
+            products = set()
             for ox_n in ox_numbers:
                 subindexes = get_subindexes(ox_n, -2)
                 product = metal + subindexes[0] + "O" + subindexes[1]
@@ -319,19 +319,19 @@ def get_products(compounds, reactionType):
         metal_ox_numbers = oxidation_numbers[metal]
         nonmetal_ox_numbers = oxidation_numbers[non_metal]
 
-        print(metal_ox_numbers, nonmetal_ox_numbers[0])
+        print(metal_ox_numbers, str(get_negative(nonmetal_ox_numbers)))
 
         if type(oxidation_numbers[metal]) == int:
 
             subindexes = get_subindexes(
-                metal_ox_numbers, nonmetal_ox_numbers[0])
+                metal_ox_numbers, str(get_negative(nonmetal_ox_numbers)))
             products = metal + subindexes[0] + non_metal + subindexes[1]
         else:
             products = set()
 
             for i in range(0, len(metal_ox_numbers)):
                 subindexes = get_subindexes(
-                    metal_ox_numbers[i], nonmetal_ox_numbers[0])
+                    metal_ox_numbers[i], str(get_negative(nonmetal_ox_numbers)))
                 product = metal + subindexes[0] + non_metal + subindexes[1]
                 products.add(product)
         return products
@@ -348,12 +348,12 @@ def get_products(compounds, reactionType):
         metal_ox_numbers = oxidation_numbers[metal]
         nonmetal_ox_numbers = oxidation_numbers[non_metal]
 
-        print(metal_ox_numbers, nonmetal_ox_numbers[0])
+        print(metal_ox_numbers, str(get_negative(nonmetal_ox_numbers)))
 
         if type(oxidation_numbers[metal]) == int:
 
             subindexes = get_subindexes(
-                metal_ox_numbers, nonmetal_ox_numbers[0])
+                metal_ox_numbers, str(get_negative(nonmetal_ox_numbers)))
             products = metal + subindexes[0] + \
                 non_metal + subindexes[1] + " + H2"
         else:
@@ -361,7 +361,7 @@ def get_products(compounds, reactionType):
 
             for i in range(0, len(metal_ox_numbers)):
                 subindexes = get_subindexes(
-                    metal_ox_numbers[i], nonmetal_ox_numbers[0])
+                    metal_ox_numbers[i], str(get_negative(nonmetal_ox_numbers)))
                 product = metal + subindexes[0] + non_metal + subindexes[1]
                 products.add(product + " + H2")
         return products
@@ -369,35 +369,84 @@ def get_products(compounds, reactionType):
         hidrox = get_plain_formula(compounds[0].formula)
         acid = get_plain_formula(compounds[1].formula)
 
-        metal = hidrox.replace('OH', '')
-        metal = metal.replace('(OH)', '')
+        print(hidrox)
+
+        metal = hidrox.replace('O', '')
+        metal = metal.replace('H', '')
         metal = ''.join(i for i in metal if not i.isdigit())
 
         non_metal = acid.replace('H', '')
         non_metal = non_metal.replace('O', '')
         non_metal = ''.join(i for i in non_metal if not i.isdigit())
 
-        print(metal, acid, non_metal)
-
         metal_ox_numbers = oxidation_numbers[metal]
+
+        if "O" in acid:
+            oxygen = acid[acid.index("O"): len(acid)]
+            product = metal + (
+                compounds[1].occurences['H'] if compounds[1].occurences['H'] != 1 else "") + "(" + non_metal + (
+                compounds[1].occurences[non_metal] if compounds[1].occurences[non_metal] != 1 else "") + oxygen + ")"
+
+            if type(metal_ox_numbers) == int:
+                products = product + \
+                    (str(metal_ox_numbers) if metal_ox_numbers != 1 else "")
+            else:
+                products = set()
+                for ox in metal_ox_numbers:
+                    products.append(product + (ox if ox != 1 else ""))
+
+            return products
+        else:
+            oxygen = ""
+
+        print(metal, acid, non_metal, oxygen)
+
         nonmetal_ox_numbers = oxidation_numbers[non_metal]
 
-        print(metal_ox_numbers, nonmetal_ox_numbers[0])
+        # print(metal_ox_numbers, nonmetal_ox_numbers[0])
 
-        if type(oxidation_numbers[metal]) == int:
+        if type(metal_ox_numbers) == int and type(nonmetal_ox_numbers) != int:
+            subindexes = get_subindexes(
+                metal_ox_numbers, str(get_negative(nonmetal_ox_numbers)))
+
+            if subindexes[1] == 1:
+                product = metal + subindexes[0] + \
+                    non_metal + subindexes[1] + oxygen
+            else:
+                product = metal + \
+                    subindexes[0] + "(" + non_metal + \
+                    oxygen + ")" + subindexes[1]
+            products = product + " + H2O"
+        elif type(metal_ox_numbers) == int:
 
             subindexes = get_subindexes(
-                metal_ox_numbers, nonmetal_ox_numbers[0])
-            products = metal + subindexes[0] + \
-                non_metal + subindexes[1] + " + H2O"
+                metal_ox_numbers, nonmetal_ox_numbers)
+
+            if subindexes[1] == 1:
+                product = metal + subindexes[0] + \
+                    non_metal + subindexes[1] + oxygen
+            else:
+                product = metal + \
+                    subindexes[0] + "(" + non_metal + \
+                    oxygen + ")" + subindexes[1]
+            products = product + " + H2O"
         else:
             products = set()
 
             for i in range(0, len(metal_ox_numbers)):
                 subindexes = get_subindexes(
                     metal_ox_numbers[i], nonmetal_ox_numbers[0])
-                product = metal + subindexes[0] + non_metal + subindexes[1]
-                products.add(product + " + H2O")
+
+                if subindexes[1] == 1:
+                    product = metal + subindexes[0] + \
+                        non_metal + subindexes[1] + oxygen
+                else:
+                    product = metal + \
+                        subindexes[0] + "(" + non_metal + \
+                        oxygen + ")" + subindexes[1]
+                products = product + " + H2O"
+
+                products.add(product + oxygen + " + H2O")
         return products
 
 
@@ -437,12 +486,34 @@ def get_reaction_type(compounds):
 
 def get_compounds(compounds):
     compounds = compounds.split(" + ")
+
     compounds = map(lambda comp: Compound(comp), compounds)
     return list(compounds)
 
 
 def get_compound_type(compound):
+
     plain_formula = get_plain_formula(compound.formula)
+
+    # is hidroxyd?
+    comps = list(compound.occurences.keys())
+
+    if len(list(compound.occurences)) == 3 and "H" in plain_formula and "O" in plain_formula:
+        el = plain_formula.replace('H', '')
+        el = el.replace('O', '')
+        el = ''.join(i for i in el if not i.isdigit())
+
+        element = Element(el)
+
+        if element.properties["Metal"]:
+            plain_formula = el + \
+                "(OH)" + str(compound.occurences['H']
+                             ) if compound.occurences['H'] > 1 else el + "OH"
+
+    ############################################################################################
+
+    print(compound.formula, plain_formula)
+
     if len(compound.occurences) == 1:
         if plain_formula == "O2" or plain_formula == "H2":
             compoundType = plain_formula
@@ -455,6 +526,8 @@ def get_compound_type(compound):
         if plain_formula != "H2O":
             response = requests.get(
                 "https://www.formulacionquimica.com/" + plain_formula)
+
+            print("https://www.formulacionquimica.com/" + plain_formula)
 
             soup = BeautifulSoup(response.content, "html.parser")
 
