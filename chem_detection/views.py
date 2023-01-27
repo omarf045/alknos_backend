@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework import authentication, permissions
 
 import base64
+import re
 
 import cv2
 import numpy as np
@@ -17,6 +18,7 @@ import os
 from django.conf import settings 
 
 import cirpy
+import pubchempy as pcp
 from img2mol.inference import *
 
 import threading
@@ -26,8 +28,8 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics
 from rest_framework.authtoken.models import Token
-# Class based view to Get User Details using Token Authentication
 
+# Class based view to Get User Details using Token Authentication
 
 img2mol_instance = None
 smiles = None
@@ -115,6 +117,7 @@ class ChemDetectionAPI(APIView):
         cont += 1
 
         file_base64 = request.data['base64']
+        file_base64 = re.sub(r'^.*?base64,', '', file_base64)
 
         print(file_base64)
 
@@ -126,10 +129,9 @@ class ChemDetectionAPI(APIView):
 
         cv2.imwrite(path,imagen)
 
-
         def predict():
             global smiles
-            res = img2mol_instance(filepath=str(cont) + ".png")
+            res = img2mol_instance(path)
             smiles = res["smiles"]
 
         thread = threading.Thread(target=predict)
@@ -142,15 +144,30 @@ class ChemDetectionAPI(APIView):
 
         os.remove(path)
 
+        print(" => ", smiles)
+
+        #print("--- Getting SMILES")
+        #n_smiles = cirpy.resolve(smiles,'smiles')
+
         print("--- Getting IUPAC name")
 
-        iupac_name = cirpy.resolve(smiles, 'iupac_name')
+        #iupac_name = cirpy.resolve(smiles, 'iupac_name')
+        compound = pcp.get_compounds(smiles, 'smiles')
+        compound = compound[0]
+        iupac_name = compound.iupac_name
+
+        print(" => ", iupac_name)
+
+        print("--- Getting possible common names")
+        possible_common_names = []
+
+        for i in range(3):
+            possible_common_names.append(compound.synonyms[i])
 
         mol2_path = os.path.join(settings.MEDIA_ROOT + "/file.mol2")
 
         if os.path.exists(mol2_path):
             os.remove(mol2_path)  
-
 
         print("--- Writing file.mol2")
 
@@ -161,4 +178,4 @@ class ChemDetectionAPI(APIView):
 
         print("--- Finished")
 
-        return Response({"smiles": smiles, "iupac_name": iupac_name})
+        return Response({"smiles": smiles, "iupac_name": iupac_name, "possible_common_name": possible_common_names})

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from rest_framework.authtoken import views
-from .views import UserDetailAPI, RegisterUserAPI, InorganicReactionAPI
+from .views import UserDetailAPI, RegisterUserAPI, InorganicReactionAPI,VerifyUserAPI,LoginUserAPI,PasswordResetAPI
 
 
 urlpatterns = [
@@ -9,5 +9,7 @@ urlpatterns = [
     path("inorganic-reaction", InorganicReactionAPI.as_view()),
     path("get-details", UserDetailAPI.as_view()),
     path('register', RegisterUserAPI.as_view()),
-    path('login', views.obtain_auth_token)
+    path('login', LoginUserAPI.as_view()),
+    path('verify/<uid>/<token>', VerifyUserAPI.as_view()),
+    path('reset', PasswordResetAPI.as_view()),
 ]

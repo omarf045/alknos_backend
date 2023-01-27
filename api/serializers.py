@@ -3,8 +3,21 @@ from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
+import threading
+import base64
+
+from email.message import EmailMessage
+import smtplib
+
+from django.conf import settings
+
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 # Serializer to Get User Details using Django Token Authentication
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -44,6 +57,39 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
         )
+        user.is_active = False
         user.set_password(validated_data['password'])
         user.save()
+
+        token_generator = PasswordResetTokenGenerator()
+        activation_token = token_generator.make_token(user)
+        print(activation_token)
+
+
+        def send(user, email_to, token):
+            email = EmailMessage()
+            email["From"] = settings.EMAIL_HOST_USER
+            email["To"] = email_to
+            email["Subject"] = "Verificacion de cuenta ALKNOS"
+
+            uid_bytes = str(user.id).encode('ascii')
+            uidb64_bytes = base64.b64encode(uid_bytes)
+            uidb64 = uidb64_bytes.decode('ascii')#.strip("=")
+
+            content = "http://127.0.0.1:8000/api/v1.0/verify/" + uidb64 + "/" + token
+
+            email.set_content(content)
+
+            smtp = smtplib.SMTP(settings.EMAIL_HOST,
+                                port=settings.EMAIL_PORT)
+            smtp.starttls()
+            smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+            smtp.sendmail(settings.EMAIL_HOST_USER,
+                          email_to, email.as_string())
+            smtp.quit()
+            print("--- Verification email has been sent")
+
+        thread = threading.Thread(target=send, args=(user,validated_data['email'], activation_token))
+        thread.start()
+
         return user
