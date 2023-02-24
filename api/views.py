@@ -120,8 +120,8 @@ class VerifyUserAPI(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
 
-        uidb64 = kwargs['uid']
-        token = kwargs['token']
+        uidb64 = request.data['uid']
+        token = request.data['token']
 
         uidb64_bytes = uidb64.encode('ascii')
         uid_bytes = base64.b64decode(uidb64_bytes)
@@ -132,6 +132,8 @@ class VerifyUserAPI(generics.CreateAPIView):
         print(uid, token)
 
         token_generator = PasswordResetTokenGenerator()
+
+        print(user.is_active)
 
         if not user.is_active:
             if token_generator.check_token(user,token):

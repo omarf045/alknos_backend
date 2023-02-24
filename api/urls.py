@@ -10,6 +10,6 @@ urlpatterns = [
     path("get-details", UserDetailAPI.as_view()),
     path('register', RegisterUserAPI.as_view()),
     path('login', LoginUserAPI.as_view()),
-    path('verify/<uid>/<token>', VerifyUserAPI.as_view()),
+    path('verify', VerifyUserAPI.as_view()),
     path('reset', PasswordResetAPI.as_view()),
 ]

@@ -76,7 +76,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             uidb64_bytes = base64.b64encode(uid_bytes)
             uidb64 = uidb64_bytes.decode('ascii')#.strip("=")
 
-            content = "http://127.0.0.1:8000/api/v1.0/verify/" + uidb64 + "/" + token
+            content = "http://localhost:3000/verify?token=" + uidb64.replace("=","%3D") + "%2F" + token
 
             email.set_content(content)
 
