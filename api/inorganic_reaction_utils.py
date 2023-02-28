@@ -144,9 +144,9 @@ reactions = [["Metal", "Hydrogen"],
 
 # Lista de reacciones
 # 1. Metal + Hidrogeno ---> Hidruro metalico
-# 2. NoMetal + Hidrogeno ---> Hidracido
+# 2. NoMetal + Hidrogeno ---> Hidruro no metalico / Hidracido
 # 3. Metal + Oxigeno ---> Oxido metalico
-# 4. NoMetal + Oxigeno ---> Anhidrido
+# 4. NoMetal + Oxigeno ---> Oxido no metalico / Anhidrido
 # 5. MetalActivo + Agua ---> Hidroxido + Hidrogeno
 # 6. Oxido metalico + Agua ---> Hidroxido
 # 7. Anhidrido + Agua ---> Oxoacido
@@ -330,8 +330,7 @@ def get_products(compounds, reactionType):
 
         return products
     elif reactionType == 7:  # Oxoacido
-        non_metal = get_plain_formula(compounds[0].formula)[
-            0:get_plain_formula(compounds[0].formula).index("O")]
+        non_metal = get_plain_formula(compounds[0].formula)[0:get_plain_formula(compounds[0].formula).index("O")]
 
         non_metal = ''.join(i for i in non_metal if not i.isdigit())
         print(non_metal)
@@ -510,9 +509,9 @@ def get_compound_name(compound):
                               htmlElement.get_text().index(":") + 2: len(htmlElement.get_text())])
 
         properties_dict = {
-            "n_sistematica": properties[0],
-            "n_stock": properties[1],
-            "n_tradicional": properties[2],
+            "nomenclatura_sistematica": properties[0],
+            "nomenclatura_stock": properties[1],
+            "nomenclatura_tradicional": properties[2],
             "tipo_compuesto": properties[3]}
 
         return(properties_dict)
