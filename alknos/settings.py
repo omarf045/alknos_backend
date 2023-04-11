@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'api',
     'chem_detection',
+    'compound_information',
     'corsheaders'
 ]
 

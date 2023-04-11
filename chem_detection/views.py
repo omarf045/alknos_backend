@@ -61,56 +61,6 @@ class ChemDetectionAPI(APIView):
 
         return Response(data)
 
-    '''
-    def get(self, request, *args, **kwargs):
-        file_obj = request.FILES['file']
-
-        print(request)
-
-        path = os.path.join(settings.MEDIA_ROOT + '/images/', file_obj.name)
-
-        with open(path, 'wb') as infile:
-            str_repr = file_obj.read()
-            infile.write(str_repr)
-            infile.close()
-
-        def predict():
-            global smiles
-            res = img2mol_instance(filepath=path)
-            smiles = res["smiles"]
-
-        thread = threading.Thread(target=predict)
-        thread.start()
-
-        print("--- Detection started")
-
-        thread.join()
-        print("--- Detection finished")
-
-        os.remove(path)
-
-        print("--- Getting IUPAC name")
-
-        iupac_name = cirpy.resolve(smiles, 'iupac_name')
-
-        mol2_path = os.path.join(settings.MEDIA_ROOT + "/file.mol2")
-
-        if os.path.exists(mol2_path):
-            os.remove(mol2_path)  
-
-
-        print("--- Writing file.mol2")
-
-        with open(mol2_path, 'wb') as infile:
-            mol2 = cirpy.resolve(smiles, 'mol2')
-            infile.write(bytes(mol2, 'utf-8'))
-            infile.close()
-
-        print("--- Finished")
-
-        return Response({"smiles": smiles, "iupac_name": iupac_name})
-'''
-
     def post(self, request, *args, **kwargs):
 
         global cont
