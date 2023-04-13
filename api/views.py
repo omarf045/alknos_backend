@@ -151,7 +151,7 @@ class LoginUserAPI(generics.CreateAPIView):
 
 
 class VerifyUserAPI(generics.CreateAPIView):
-    #permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)
     #serializer_class = RegisterSerializer
 
     def get(self, request, *args, **kwargs):
