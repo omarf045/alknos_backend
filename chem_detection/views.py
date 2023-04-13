@@ -95,13 +95,8 @@ class ChemDetectionAPI(APIView):
         os.remove(path)
 
         print(" => ", smiles)
-
-        #print("--- Getting SMILES")
-        #n_smiles = cirpy.resolve(smiles,'smiles')
-
         print("--- Getting IUPAC name")
 
-        #iupac_name = cirpy.resolve(smiles, 'iupac_name')
         compound = pcp.get_compounds(smiles, 'smiles')
         compound = compound[0]
         iupac_name = compound.iupac_name
