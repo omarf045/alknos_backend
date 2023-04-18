@@ -1,10 +1,9 @@
 from django.urls import path
 
-from rest_framework.authtoken import views
-from .views import CompoundQueryAPI
+from .views import CompoundQueryAPI, CompoundInformationAPI
 
 
 urlpatterns = [
-    # reactions
     path("compound-query", CompoundQueryAPI.as_view()),
+    path("compound-information", CompoundInformationAPI.as_view()),
 ]

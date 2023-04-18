@@ -154,7 +154,7 @@ class VerifyUserAPI(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     #serializer_class = RegisterSerializer
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
 
         uidb64 = request.data['uid']
         token = request.data['token']
