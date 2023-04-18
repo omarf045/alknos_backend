@@ -163,8 +163,8 @@ class CompoundInformationAPI(APIView):
                                 prop = desc_section["Information"][0]["Value"]["StringWithMarkup"][0]["String"]
                             except KeyError:
                                 prop = desc_section["Information"][0]["Value"]["Number"][0]
-                                property_data = {"name": desc_section["TOCHeading"], "value":prop, "description":desc_section["Description"]}
-                                chemical_and_physical_properties_data.append(property_data)
+                            property_data = {"name": desc_section["TOCHeading"], "value":prop, "description":desc_section["Description"]}
+                            chemical_and_physical_properties_data.append(property_data)
 
 
             synonyms_url = f'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/synonyms/JSON'
