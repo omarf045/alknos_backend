@@ -21,13 +21,12 @@ from rest_framework.authtoken.models import Token
 
 response_data = None
 # Create your views here.
-class CompoundQueryAPI(APIView):
+class CheckBalanceAPI(APIView):
     #authentication_classes = [authentication.TokenAuthentication]
     #permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (AllowAny,)
 
-    def post(self, request, *args, **kwargs):
-        print(request)
+    def get(self, request, *args, **kwargs):
         query = request.data['query']
         query = query.upper()
 
@@ -88,7 +87,7 @@ class CompoundInformationAPI(APIView):
     #permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (AllowAny,)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         cid = request.data['cid']
 
         global response_data

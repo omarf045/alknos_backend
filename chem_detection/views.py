@@ -106,8 +106,8 @@ class ChemDetectionAPI(APIView):
         print("--- Getting possible common names")
         possible_common_names = []
 
-        for i in range(3):
-            possible_common_names.append(compound.synonyms[i])
+       
+        possible_common_names.append(compound.synonyms[:3])
 
         mol2_path = os.path.join(settings.MEDIA_ROOT + "/file.mol2")
 

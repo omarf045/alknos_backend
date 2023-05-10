@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api',
     'chem_detection',
     'compound_information',
+    'stoichiometry',
     'corsheaders'
 ]
 
