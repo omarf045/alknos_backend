@@ -42,6 +42,12 @@ class CalculateStoichiometryAPI(APIView):
         stoichiometry_unit = request.data['unit']
         stoichiometry_value = request.data['value']
         compound_position = request.data['position']
-        stoichiometry_reaction = reaction.get_amounts(compound_position, str(stoichiometry_unit+"="+stoichiometry_value))
+
+        if (stoichiometry_unit=='moles'):
+            stoichiometry_reaction = reaction.get_amounts(compound_position, moles=stoichiometry_value)
+        elif (stoichiometry_unit=='grams'):
+            
+
+
 
         return Response(stoichiometry_reaction)

@@ -118,10 +118,14 @@ class CompoundInformationAPI(APIView):
             # get chemical safety data
             chemical_safety_data = []
             chemical_safety_info_dict = None
-            for info_dict in chemical_safety_section["Information"]:
-                if info_dict["Name"] == "Chemical Safety":
-                    chemical_safety_info_dict = info_dict
-                    break
+
+            try:
+                for info_dict in chemical_safety_section["Information"]:
+                    if info_dict["Name"] == "Chemical Safety":
+                        chemical_safety_info_dict = info_dict
+                        break
+            except:
+                pass
 
             if chemical_safety_info_dict:
                 try:
