@@ -1,8 +1,9 @@
 from django.urls import path
 
-from .views import CompoundInformationAPI
+from .views import BalanceReactionAPI, CalculateStoichiometryAPI 
 
 
 urlpatterns = [
-    path("compound-information", CompoundInformationAPI.as_view()),
+    path("balance-reaction", BalanceReactionAPI.as_view()),
+    path("calculate-stoichiometry", CalculateStoichiometryAPI.as_view()),
 ]
